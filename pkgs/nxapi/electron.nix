@@ -1,13 +1,17 @@
 { lib
 , fetchFromGitHub
+, fetchurl
 , buildNpmPackage
 , nodejs_22
-, electron_39
+, electron_42
 , python3
 , pkg-config
 , vips
 , git
 , makeBinaryWrapper
+, makeDesktopItem
+, copyDesktopItems
+, imagemagick
 }:
 
 let
@@ -20,6 +24,36 @@ let
     hash = "sha256-O2AN3eiZknwyI1SAInDck7ou79SpnWFWdFKoZeArVaY=";
     # rollup.config.js calls `git rev-parse HEAD` -> .git is required
     leaveDotGit = true;
+  };
+
+  # Official project logo (GitLab project avatar)
+  icon = fetchurl {
+    url = "https://gitlab.fancy.org.uk/uploads/-/system/project/avatar/96/af3fa9d9821d461ab832bcf4b0d1eece.png";
+    hash = "sha256-S1RtcQwrzB+jBFJIEu7+ogrAbCPmSp8dC3z/vaHmurI=";
+  };
+
+  # Electron derives the X11 WM_CLASS from the application directory's
+  # package.json when launched with a directory (instead of a script file):
+  #   productName "Nintendo Switch Online" -> "nintendo-switch-online"
+  # The desktop entry's StartupWMClass must match this value.
+  appDir = "lib/nxapi-app";
+
+  desktopItem = makeDesktopItem {
+    name = "nxapi-app";
+    desktopName = "Nintendo Switch Online";
+    genericName = "Nintendo Switch app APIs";
+    comment = "Nintendo Switch Online/Parental Controls app APIs";
+    exec = "nxapi-app %U";
+    icon = "nxapi-app";
+    terminal = false;
+    categories = [ "Utility" ];
+    # Registered protocol handlers (see nxapi src/app/main/index.ts)
+    mimeTypes = [
+      "x-scheme-handler/com.nintendo.znca"
+      "x-scheme-handler/npf71b963c1b7b6d119"
+      "x-scheme-handler/npf54789befb391a838"
+    ];
+    startupWMClass = "nintendo-switch-online";
   };
 
   # package-lock.json already present in the git repo
@@ -35,7 +69,9 @@ buildNpmPackage {
 
   npmDepsHash = "sha256-5SORJHxpBLeje5XRPP36gesiary3qpnI8MdvTAsL8yM=";
 
-  nativeBuildInputs = [ python3 pkg-config makeBinaryWrapper git ];
+  nativeBuildInputs = [ python3 pkg-config makeBinaryWrapper git copyDesktopItems imagemagick ];
+
+  desktopItems = [ desktopItem ];
 
   # sharp (native module) must be compiled against nix's libvips
   buildInputs = [ vips ];
@@ -47,8 +83,9 @@ buildNpmPackage {
   # and run tsc + rollup manually in postConfigure
   dontNpmBuild = true;
 
-  # Electron npm package tries to download the electron binary from GitHub
-  # -> blocked in the sandbox. We use nixpkgs' electron_39 at runtime.
+  # The electron npm package (v21, pulled by nxapi's devDependencies) tries to
+  # download the electron binary from GitHub in its postinstall -> blocked in
+  # the sandbox. We use nixpkgs' electron_42 at runtime instead.
   ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
   # Compiles TS -> JS, then bundles via rollup
@@ -59,33 +96,45 @@ buildNpmPackage {
     npx rollup --config
   '';
 
-  # Do NOT run electron-builder: we assemble the app manually
-  # Uses nixpkgs' electron at runtime
+  # Do NOT run electron-builder: we assemble the app manually.
+  # The app is laid out as an Electron "app directory" so that Electron derives
+  # the correct X11 WM_CLASS (from package.json's productName) when it is passed
+  # a directory instead of a script path. This is also what the bundle expects
+  # for its resources: <appdir>/resources/{app,common} and <appdir>/dist/app/bundle.
   postInstall = ''
-    mkdir -p $out/lib/nxapi-app
-    cp -r dist $out/lib/nxapi-app/
-    cp -r resources/app $out/lib/nxapi-app/resources-app
+    appdir=$out/${appDir}
+    mkdir -p $appdir
+    cp -r dist $appdir/
+    mkdir -p $appdir/resources
+    cp -r resources/app $appdir/resources/app
+    cp -r resources/common $appdir/resources/common
+
+    # Minimal package.json making $appdir a valid Electron application.
+    cat > $appdir/package.json <<EOF
+    {
+      "name": "nxapi-app",
+      "productName": "Nintendo Switch Online",
+      "version": "${version}",
+      "type": "module",
+      "main": "dist/bundle/app-entry.cjs"
+    }
+    EOF
 
     # Removes node_modules and bin installed by npm (path conflict with
     # nxapi CLI because both packages expose lib/node_modules/nxapi/ and bin/nxapi).
     # The Electron app uses the precompiled bundle, so these directories are not needed.
     rm -rf $out/lib/node_modules $out/bin/nxapi
 
-    # Wrapper launches nixpkgs' electron on the bundle
-    makeBinaryWrapper ${electron_39}/bin/electron $out/bin/nxapi-app \
-      --add-flags $out/lib/nxapi-app/dist/bundle/app-entry.cjs
+    # Wrapper launches nixpkgs' electron on the app directory
+    makeBinaryWrapper ${electron_42}/bin/electron $out/bin/nxapi-app \
+      --add-flags $appdir
 
-    # .desktop + icon
-    mkdir -p $out/share/applications
-    cat > $out/share/applications/nxapi-app.desktop <<EOF
-    [Desktop Entry]
-    Type=Application
-    Name=Nintendo Switch Online
-    Comment=nxapi Electron app
-    Exec=nxapi-app
-    Icon=nxapi-app
-    Categories=Utility;
-    EOF
+    # Multi-size launcher icon (hicolor theme)
+    for size in 16 32 48 64 128 256; do
+      mkdir -p "$out/share/icons/hicolor/''${size}x''${size}/apps"
+      magick ${icon} -resize "''${size}x''${size}" \
+        "$out/share/icons/hicolor/''${size}x''${size}/apps/nxapi-app.png"
+    done
   '';
 
   meta = {
