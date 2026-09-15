@@ -20,7 +20,7 @@
   overlays = import ./overlays; # nixpkgs overlays
 
   nxapi = pkgs.callPackage ./pkgs/nxapi/default.nix { };
-  nxapi-electron = pkgs.callPackage ./pkgs/nxapi/electron.nix { };
+  nxapi-app = pkgs.callPackage ./pkgs/nxapi-app/default.nix { };
   # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
 }
