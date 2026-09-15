@@ -19,7 +19,8 @@
   # flakeModules = { }; # flake-parts modules
   overlays = import ./overlays; # nixpkgs overlays
 
-  example-package = pkgs.callPackage ./pkgs/example-package { };
+  nxapi = pkgs.callPackage ./pkgs/nxapi/default.nix { };
+  nxapi-electron = pkgs.callPackage ./pkgs/nxapi/electron.nix { };
   # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
 }
