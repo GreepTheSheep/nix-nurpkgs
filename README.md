@@ -25,10 +25,11 @@
 
 # Greep's [NUR](https://github.com/nix-community/NUR) repository
 
+![Fetch latest updates with nix-update](https://github.com/GreepTheSheep/nix-nurpkgs/actions/workflows/nix-update.yml/badge.svg)
+
 ![Build and populate cache](https://github.com/GreepTheSheep/nix-nurpkgs/workflows/Build%20and%20populate%20cache/badge.svg)
+[![Cachix Cache](https://img.shields.io/badge/cachix-greep-blue.svg?logo=data:image/svg%2bxml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik00OS4wMzIgMjEuMzMyIDMyLjE0IDkuMzM0bC0xNy4xNzIgMTIuMDJ2MS42NTNsMTcuMTcyIDExLjc1TDQ5LjAzMiAyMy4wM3YtMS42OTdabS0zNy41MDQtMy42NzdBMy41OTcgMy41OTcgMCAwIDAgMTAgMjAuNjAzdjMuMTY1YzAgMS4xOS41ODQgMi4zMDIgMS41NTkgMi45NjhsMTguNTk3IDEyLjcyNmEzLjUxOCAzLjUxOCAwIDAgMCA0LS4wMTNsMTguMzA1LTEyLjcxQTMuNTk2IDMuNTk2IDAgMCAwIDU0IDIzLjc4MnYtMy4xOTZhMy41OTcgMy41OTcgMCAwIDAtMS41MDgtMi45MzNMMzQuMTg2IDQuNjUyYTMuNTE4IDMuNTE4IDAgMCAwLTQuMDYtLjAxNEwxMS41MjcgMTcuNjU1WiIgZmlsbD0iIzEwMTgyOCIvPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTAuMDYzIDM0LjI0NWMuMTcxLjkzNS43MDYgMS43NzUgMS41IDIuMzE4TDMwLjE2MSA0OS4yOWEzLjUxOCAzLjUxOCAwIDAgMCA0LS4wMTRsMTguMzA1LTEyLjcxYTMuNTg5IDMuNTg5IDAgMCAwIDEuNDgzLTIuMzJoLTYuOTEzbC0xNC44OTEgMTAuMzQtMTUuMTEtMTAuMzRoLTYuOTcyWiIgZmlsbD0iIzEwMTgyOCIvPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNMTAuMDYzIDQ0LjMzOWEzLjU5IDMuNTkgMCAwIDAgMS41IDIuMzE5bDE4LjU5OCAxMi43MjVhMy41MTggMy41MTggMCAwIDAgNC0uMDEzbDE4LjMwNS0xMi43MWEzLjU5IDMuNTkgMCAwIDAgMS40ODMtMi4zMjFoLTYuOTEzbC0xNC44OTEgMTAuMzQtMTUuMTEtMTAuMzRoLTYuOTcyWiIgZmlsbD0iIzEwMTgyOCIvPjwvc3ZnPg==)](https://greep.cachix.org)
 
 <!--
 [![Build Status](https://travis-ci.com/<YOUR_TRAVIS_USERNAME>/nur-packages.svg?branch=master)](https://travis-ci.com/<YOUR_TRAVIS_USERNAME>/nur-packages)
-
-[![Cachix Cache](https://img.shields.io/badge/cachix-<YOUR_CACHIX_CACHE_NAME>-blue.svg)](https://<YOUR_CACHIX_CACHE_NAME>.cachix.org)
 -->
