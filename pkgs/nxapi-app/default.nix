@@ -33,6 +33,7 @@ pkgs.appimageTools.wrapType2 rec {
     homepage = "https://github.com/samuelthomas2774/nxapi";
     changelog = "https://github.com/samuelthomas2774/nxapi/releases/tag/v${version}";
     license = lib.licenses.agpl3Plus;
+    sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
     mainProgram = "nxapi-app";
     platforms = lib.platforms.linux;
   };
