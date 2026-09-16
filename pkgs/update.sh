@@ -22,6 +22,49 @@ list_packages() {
   done
 }
 
+# --- Reads the current version of a package (empty if unavailable) ---
+package_version() {
+  local pkg_name="$1"
+  local ver
+  if ver="$(NIXPKGS_ALLOW_INSECURE=1 nix eval --raw --impure ".#${pkg_name}.version" 2>/dev/null)" && [ -n "$ver" ]; then
+    printf '%s\n' "$ver"
+    return 0
+  fi
+  # Fallback: parse the version from the .nix source (never fail under `set -e`).
+  grep -m1 -hoE 'version = "[^"]+"' "$PKGS_DIR/$pkg_name"/*.nix 2>/dev/null \
+    | head -n1 \
+    | sed -E 's/^version = "(.*)"$/\1/' \
+    || true
+}
+
+# --- Commits the changes of a single package (only when AUTO_COMMIT=1) ---
+commit_package() {
+  local pkg_name="$1"
+  local old_version="$2"
+  local new_version="$3"
+  local rel_dir="pkgs/$pkg_name"
+
+  if [ "${AUTO_COMMIT:-0}" != "1" ]; then
+    return 0
+  fi
+
+  if [ -z "$(git -C "$REPO_ROOT" status --porcelain -- "$rel_dir")" ]; then
+    echo "No changes to commit for $pkg_name"
+    return 0
+  fi
+
+  local message
+  if [ -n "$old_version" ] && [ "$old_version" = "$new_version" ]; then
+    message="$pkg_name: update source hashes"
+  else
+    message="$pkg_name: ${old_version:-unknown} -> ${new_version:-unknown}"
+  fi
+
+  git -C "$REPO_ROOT" add -- "$rel_dir"
+  git -C "$REPO_ROOT" commit -m "$message"
+  echo "Committed: $message"
+}
+
 # --- Updates a given package ---
 update_package() {
   local pkg_name="$1"
@@ -41,6 +84,9 @@ update_package() {
   fi
 
   echo "=== Updating: $pkg_name ==="
+
+  local old_version
+  old_version="$(package_version "$pkg_name")"
 
   # Detects package-specific quirks
   local needs_insecure=false
@@ -75,6 +121,12 @@ update_package() {
     echo "Build failed for $pkg_name"
     return 1
   }
+
+  local new_version
+  new_version="$(package_version "$pkg_name")"
+  echo "Version: ${old_version:-unknown} -> ${new_version:-unknown}"
+
+  commit_package "$pkg_name" "$old_version" "$new_version"
 
   echo "OK: $pkg_name"
   echo ""
