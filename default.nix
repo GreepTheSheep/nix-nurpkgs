@@ -21,6 +21,7 @@
 
   nxapi = pkgs.callPackage ./pkgs/nxapi { };
   nxapi-app = pkgs.callPackage ./pkgs/nxapi-app { };
+  tm-mumble-link = pkgs.callPackage ./pkgs/tm-mumble-link { };
   # some-qt5-package = pkgs.libsForQt5.callPackage ./pkgs/some-qt5-package { };
   # ...
 }
