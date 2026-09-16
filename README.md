@@ -34,4 +34,4 @@
 
 - [nxapi](https://github.com/samuelthomas2774/nxapi): Nintendo Switch Online/Parental Controls app APIs - CLI
 - [nxapi-app](https://github.com/samuelthomas2774/nxapi): Nintendo Switch Online/Parental Controls app APIs - Electron app
-- [nxapi-app](https://github.com/XertroV/tm-mumble-bridge): Bridge Trackmania's proximity-chat plugin to Mumble's Link plugin for positional audio
+- [tm-mumble-link](https://github.com/XertroV/tm-mumble-bridge): Bridge Trackmania's proximity-chat plugin to Mumble's Link plugin for positional audio
