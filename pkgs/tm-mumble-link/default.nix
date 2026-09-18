@@ -72,7 +72,7 @@ stdenv.mkDerivation {
     runHook postInstall
   '';
 
-  desktopItems = [
+  desktopItems =
     lib.optionals (!tuiVersion) [
       (makeDesktopItem {
         name = "tm-mumble-link";
@@ -84,7 +84,7 @@ stdenv.mkDerivation {
         terminal = false;
       })
     ]
-    lib.optionals tuiVersion [
+    ++ lib.optionals tuiVersion [
       (makeDesktopItem {
         name = "tm-mumble-link-tui";
         desktopName = "TM to Mumble Link (TUI)";
@@ -94,8 +94,7 @@ stdenv.mkDerivation {
         categories = [ "Game" "Audio" ];
         terminal = true;
       })
-    ]
-  ];
+    ];
 
   meta = {
     description = "Bridge Trackmania's proximity-chat plugin to Mumble's Link plugin for positional audio";
