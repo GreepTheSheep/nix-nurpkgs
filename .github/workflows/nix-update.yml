@@ -9,9 +9,6 @@ permissions:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    env:
-      # Filled by update.sh, rendered into the run summary below.
-      REPORT_FILE: ${{ runner.temp }}/nix-update-report.tsv
     steps:
     - name: Checkout repository
       uses: actions/checkout@v7
@@ -31,9 +28,14 @@ jobs:
     - name: Run nix-update
       env:
         AUTO_COMMIT: "1"
+        # Filled by update.sh, rendered into the run summary below. Declared per
+        # step because the `runner` context is not available in job-level env.
+        REPORT_FILE: ${{ runner.temp }}/nix-update-report.tsv
       run: ./pkgs/update.sh
     - name: Generate run summary
       if: always()
+      env:
+        REPORT_FILE: ${{ runner.temp }}/nix-update-report.tsv
       run: |
         REPO_URL="${{ github.server_url }}/${{ github.repository }}"
         SHA="${{ github.sha }}"
