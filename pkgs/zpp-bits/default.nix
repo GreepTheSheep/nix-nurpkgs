@@ -28,7 +28,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   meta = with lib; {
-    description = "Modern C++20 binary serialization and RPC library, with just one header file";
+    description = "Modern C++20 binary serialization and RPC library";
     homepage = "https://github.com/eyalz800/zpp_bits";
     changelog = "https://github.com/eyalz800/zpp_bits/releases/tag/v${finalAttrs.version}";
     license = licenses.mit;
